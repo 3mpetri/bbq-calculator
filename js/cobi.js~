@@ -1,0 +1,149 @@
+$(document).ready(function () {
+	
+	function roundHalf(num) {
+    	num = Math.round(num*2)/2;
+    	return num;
+	}		
+	
+	function food(no_ppl, meat_eating_people, no_veg, no_spiciness) {
+		
+		// lukKG : mesoKG = 1 : 3
+		// rajcicaL : mesoKG = 1 : 4
+		// treba i umaka od rajcica, pelata
+		// pola litre cobanca po osobi
+		// ljutina u ovisnosti o 0-10		
+		
+		var total_meat = (meat_pp*meat_eating_people).toFixed(1);
+		var total_beef = (total_meat*(5/8)).toFixed(1);
+		var total_heifer = (total_meat*(3/8)).toFixed(1);
+		var total_onion = (total_meat*(1/3)).toFixed(1);//KG onions
+		var total_pelata = (total_meat*(1/4)).toFixed(1); //L tomato juice
+		var quantity = Math.ceil(meat_eating_people/1.5); //L cobanca
+		var spice_conf = (no_spiciness/10)+0.5; //izmedju 0.5 i 1.5 ovisno o omjeru		
+		var total_bread = roundHalf(bread_pp*no_ppl*1.2); //20% more cuz its cobanac		
+		var spiciness = roundHalf(spice_conf*0.6*quantity);
+		
+		// a function that takes variables and outputs them in a list!
+		$("#list_cobi").text("Beef - " + total_beef + "kg");
+		$("#list_cobi").append("<br>Heifer - " + total_heifer + "kg");
+		$("#list_cobi").append("<br>Onion - " + total_onion + "kg");
+		$("#list_cobi").append("<br>Tomato sauce - " + total_pelata + "L");
+		$("#list_cobi").append("<br>Ground cayenne pepper - " + spiciness + "g");
+		$("#list_cobi").append("<br>Bread - " + total_bread + "kg");
+						
+		
+		
+		$("#out_cobi .food").text("You need around " + total_meat + "kg of meat, out of which " +
+			total_beef + "kg of beef and " + total_heifer + "kg of heifer. ");	
+		$("#out_cobi .food").append(total_onion + "kg of onion, " + total_pelata + "L of tomato sauce and " + 
+			roundHalf(spiciness) + "g of ground cayenne pepper will do the job. ");
+		$("#out_cobi .food").append("This will all sum up to about " + quantity + "L of cobanac. ");
+		$("#out_cobi .food").append("This is why you need " + total_bread + "kg of bread. ");
+		
+		if (no_veg > 0 && no_veg < 10) {		
+			$("#out_cobi .food").append("Vegetarians, BYOF.");
+		}
+		else if (no_veg >= 10) {
+			$("#out_cobi .food").append("Vegetarians, there's plenty of you to have your own stew!");		
+		}
+	}
+
+	function drink(no_ppl, no_nonalc) {
+		var alcoholics = no_ppl - no_nonalc;
+		var total_beer = roundHalf(beer_pp*alcoholics);
+		var total_juice = Math.ceil(juice_pp*no_nonalc);
+		var total_water = Math.ceil(water_pp*no_ppl);
+		var total_rWine = roundHalf((rWine_pp*no_ppl)/4);
+		
+		// a function that takes variables and outputs them in a list!
+		$("#list_cobi").append("<br>");
+		$("#list_cobi").append("<br>Beer - " + total_beer + "L");
+		$("#list_cobi").append("<br>Red wine - " + total_rWine + "L");
+		$("#list_cobi").append("<br>Juice - " + total_juice + "L");
+		$("#list_cobi").append("<br>Water - " + total_water + "L");
+		
+		
+		$("#out_cobi .drink").text("Beer is the deal when having cobanac. " + total_beer + "L will do. ");
+		$("#out_cobi .drink").append(total_rWine + "L of red wine will go good with red meat. ");
+		
+		if (no_nonalc > 0) {		
+			$("#out_cobi .drink").append("For the less fortunate, you will need " + total_juice + 
+				"L of juice and around " +	total_water + "L of water.");
+			}
+		else {
+			$("#out_cobi .drink").append("For the less fortunate, you will also need " +
+				total_water + "L of water.");		
+		}
+	}
+
+	function tool(no_ppl) {
+		var total_plates = Math.ceil(plates_pp*no_ppl);
+		var total_cups = Math.ceil(cups_pp*no_ppl);
+		var total_forks = Math.ceil(forks_pp*no_ppl); //using the number of forks for the spoons, sorry.
+		
+		$("#list_cobi").append("<br>");
+		$("#list_cobi").append("<br>Plates - " + total_plates + " pcs");
+		$("#list_cobi").append("<br>Cups - " + total_cups + " pcs");
+		$("#list_cobi").append("<br>Forks - " + total_forks + " pcs");	
+		
+			
+		$("#out_cobi .tool").text("Finally, you will need about " + total_plates + " deep plastic plates, " + 
+			Math.ceil(total_cups) + " plastic cups and " + total_forks + " spoons. ");
+		$("#out_cobi .tool").append("Bon Appetit!");
+	}
+
+	function fun() {
+	}
+	
+	// output function calls food(), drink(), tool() and fun() priting functions
+	function output(no_ppl, no_veg, no_spiciness, no_nonalc) {
+		var meat_eating_people = no_ppl - no_veg;
+					
+		if(parseInt(no_ppl) < parseInt(no_nonalc)){
+			$("#out_cobi .food").text(no_ppl + " of you, and " + no_nonalc + " non alcoholics? Nope.");
+			cobi_clearer();
+		}				
+										
+		else if (meat_eating_people > 0) {
+			food(no_ppl, meat_eating_people, no_veg, no_spiciness);
+			drink(no_ppl, no_nonalc);
+			tool(no_ppl);
+			fun();
+			$('#out_cobi p').show();
+			$('#out_cobi').show('slow');
+		}
+		
+		else if (meat_eating_people == 0) {	
+			$("#out_cobi .food").text("Kidding?");
+			cobi_clearer()
+		}
+	
+		else {
+			$("#out_cobi .food").text("More vegetarians then people in total? The end is near.");
+			cobi_clearer()
+		}
+	}  
+	  
+  	/* fetching inputs from bbq form */
+  	$("#inq_cobi form").on("submit", function(event) {
+ 		event.preventDefault();
+  		var no_ppl = $("#inq_cobi #no_ppl").val(); //number of people
+  		var no_veg = $("#inq_cobi #no_veg").val(); //number of vegetarians
+  		var no_spiciness = $("#inq_cobi #no_spiciness").val(); //amount of spiciness
+  		var no_nonalc = $("#inq_cobi #no_nonalc").val(); //number of non alcoholics
+		
+		output(no_ppl, no_veg, no_spiciness, no_nonalc);
+  	});
+  	
+  	  	function cobi_clearer() {
+		$("#out_cobi .drink").text("");
+		$("#out_cobi .tool").text("");
+		$("#out_cobi .fun").text("");
+		$("#list_cobi").text("");
+		$('#out_cobi p').show();
+		$('#out_cobi').show('slow');  	
+  	}
+  
+});
+
+  
